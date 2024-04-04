@@ -1,0 +1,16 @@
+[package]
+name = "cargo-extract"
+version = "0.1.0"
+edition = "2021"
+authors = ["Emil Englesson <englesson.emil@gmail.com>"]
+description = "Cargo subcommand to extract information from Cargo.toml files"
+repository = "https://github.com/LimeEng/cargo-extract/"
+license = "MIT"
+categories = ["command-line-utilities", "development-tools::build-utils","development-tools::cargo-plugins"]
+
+exclude = [".github/**"]
+
+[dependencies]
+anyhow = "1.0"
+clap = { version = "4.5", features = ["cargo"] }
+toml = { version = "0.8", features = ["preserve_order"] }
