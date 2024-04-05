@@ -1,6 +1,6 @@
-use std::fs;
 use anyhow::Context;
 use clap::{crate_version, Arg, Command};
+use std::fs;
 use toml::Table;
 
 fn main() -> anyhow::Result<()> {
