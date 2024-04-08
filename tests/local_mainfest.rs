@@ -1,17 +1,13 @@
-use toml::Table;
-
 #[test]
-fn test_local_cargo_manifest() {
-    let manifest = include_str!("../Cargo.toml");
-    let manifest = manifest
-        .parse::<Table>()
+fn local_cargo_manifest() {
+    let manifest = include_str!("../Cargo.toml")
+        .parse::<toml::Value>()
         .expect("Failed to parse Cargo.toml manifest");
 
     macro_rules! test {
         ($pattern:expr, $target:expr) => {
-            let target = env!($target);
             let extracted = cargo_extract::extract($pattern, manifest.clone()).unwrap();
-            assert_eq!(extracted, target);
+            assert_eq!(extracted, env!($target));
         };
     }
 
