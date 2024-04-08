@@ -7,8 +7,6 @@ This cargo subcommand allows you to extract specific information from a `Cargo.t
 
 ## Installation
 
-Simply let cargo download and compile the published version.
-
 ```
 $ cargo install cargo-extract
 ```
