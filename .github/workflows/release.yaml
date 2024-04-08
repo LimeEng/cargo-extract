@@ -19,17 +19,9 @@ jobs:
         run: |
           cargo install cargo-extract
           VERSION=v$(cargo extract package.version)
-
-          LAST_PUBLISHED=$(git describe --abbrev=0)
-
-          if [[ "$VERSION" == "$LAST_PUBLISHED" ]]; then
-            echo "run_publish=false" >> "$GITHUB_OUTPUT"
-            exit 1
-          else
-            echo "Creating release: ${VERSION}"
-            gh release create ${VERSION} --title ${VERSION}
-            echo "run_publish=true" >> "$GITHUB_OUTPUT"
-          fi
+          echo "Creating release: ${VERSION}"
+          gh release create ${VERSION} --title ${VERSION}
+          echo "run_publish=true" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
