@@ -1,6 +1,6 @@
 [package]
 name = "cargo-extract"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["Emil Englesson <englesson.emil@gmail.com>"]
 description = "Cargo subcommand to extract information from Cargo.toml files"
