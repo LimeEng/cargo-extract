@@ -1,5 +1,5 @@
 use cargo_extract::ExtractResult;
-use clap::{crate_version, Arg, ArgAction, ArgGroup, Command};
+use clap::{Arg, ArgAction, ArgGroup, Command, crate_version};
 use std::{fs, process};
 
 fn main() {
