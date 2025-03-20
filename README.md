@@ -7,18 +7,18 @@ This cargo subcommand allows you to extract specific information from a `Cargo.t
 
 ## Installation
 
-```
+```sh
 $ cargo install cargo-extract
 ```
 
 ## Examples
 
-```
+```sh
 $ cargo extract package.name
 cargo-extract
 
 $ cargo extract package.version
-0.3.0
+0.3.1
 
 $ cargo extract package.categories
 command-line-utilities
@@ -27,4 +27,7 @@ development-tools::cargo-plugins
 
 $ cargo extract package.categories.0
 command-line-utilities
+
+$ cargo extract --arch
+x86_64-pc-windows-msvc
 ```
