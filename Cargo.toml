@@ -1,7 +1,7 @@
 [package]
 name = "cargo-extract"
 version = "0.3.0"
-edition = "2021"
+edition = "2024"
 authors = ["Emil Englesson <englesson.emil@gmail.com>"]
 description = "Cargo subcommand to extract information from Cargo.toml files"
 repository = "https://github.com/LimeEng/cargo-extract/"
