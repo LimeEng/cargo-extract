@@ -6,7 +6,7 @@ fn local_cargo_manifest() {
 
     macro_rules! test {
         ($pattern:expr, $target:expr) => {
-            let extracted = cargo_extract::extract($pattern, manifest.clone()).unwrap();
+            let extracted = cargo_extract::extract($pattern, &manifest).unwrap();
             assert_eq!(extracted, env!($target));
         };
     }

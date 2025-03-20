@@ -1,58 +1,71 @@
-use std::collections::VecDeque;
+use toml::Value;
 
 pub type ExtractResult<T> = Result<T, String>;
 
-pub fn extract(pattern: &str, value: toml::Value) -> ExtractResult<String> {
-    let parts: VecDeque<_> = pattern.split('.').map(ToString::to_string).collect();
-    handle(pattern, parts, value)
+pub fn extract(pattern: &str, value: &Value) -> ExtractResult<String> {
+    let parts: Vec<&str> = pattern.split('.').collect();
+    handle(pattern, &parts, value)
 }
 
-fn handle(pattern: &str, parts: VecDeque<String>, value: toml::Value) -> ExtractResult<String> {
-    let mut parts = parts;
+fn handle(pattern: &str, parts: &[&str], value: &Value) -> ExtractResult<String> {
     match value {
-        toml::Value::String(value) => check_primitive(pattern, parts, value.to_string()),
-        toml::Value::Integer(value) => check_primitive(pattern, parts, value.to_string()),
-        toml::Value::Float(value) => check_primitive(pattern, parts, value.to_string()),
-        toml::Value::Boolean(value) => check_primitive(pattern, parts, value.to_string()),
-        toml::Value::Datetime(value) => check_primitive(pattern, parts, value.to_string()),
-        toml::Value::Array(value) => {
-            if let Some(first) = parts.pop_front() {
-                if let Ok(index) = first.parse::<usize>() {
-                    if let Some(value) = value.get(index) {
-                        handle(pattern, parts, value.clone())
-                    } else {
-                        let error_msg = format!("Array index out of bounds [{first}]");
-                        Err(construct_error(pattern, &first, &error_msg))
-                    }
-                } else {
-                    let error_msg = format!("Not an array index [{first}]");
-                    Err(construct_error(pattern, &first, &error_msg))
-                }
-            } else {
-                let mut aggregated = Vec::new();
-                for val in value {
-                    aggregated.push(handle(pattern, VecDeque::new(), val.clone())?);
-                }
-                Ok(aggregated.join("\n"))
-            }
+        // If included in the below "v @ "-binding pattern
+        // it produces strings with extra quotes
+        Value::String(value) => check_primitive(pattern, parts, value.to_string()),
+        value @ (Value::Integer(_) | Value::Float(_) | Value::Boolean(_) | Value::Datetime(_)) => {
+            check_primitive(pattern, parts, value.to_string())
         }
-        toml::Value::Table(value) => {
-            if let Some(first) = parts.pop_front() {
-                if let Some(v) = value.get(&first) {
-                    handle(pattern, parts, v.clone())
-                } else {
-                    let error_msg = format!("No such property [{first}]");
-                    Err(construct_error(pattern, &first, &error_msg))
-                }
-            } else {
-                let mut aggregated = Vec::new();
-                for entry in value {
-                    let value = handle(pattern, VecDeque::new(), entry.1.clone())?;
-                    aggregated.push(format!("{} = {value}", entry.0));
-                }
-                Ok(aggregated.join("\n"))
-            }
-        }
+        Value::Array(value) => handle_array(pattern, parts, value),
+        Value::Table(value) => handle_table(pattern, parts, value),
+    }
+}
+
+fn handle_array(pattern: &str, parts: &[&str], value: &[Value]) -> ExtractResult<String> {
+    match parts.split_first() {
+        Some((first, rest)) if first.parse::<usize>().is_ok() => value
+            .get(first.parse::<usize>().unwrap())
+            .map(|v| handle(pattern, rest, v))
+            .unwrap_or_else(|| {
+                Err(construct_error(
+                    pattern,
+                    first,
+                    &format!("Array index out of bounds [{first}]"),
+                ))
+            }),
+        Some((first, _)) => Err(construct_error(
+            pattern,
+            first,
+            &format!("Not an array index [{first}]"),
+        )),
+        None => value
+            .iter()
+            .map(|v| handle(pattern, &[], v))
+            .collect::<ExtractResult<Vec<_>>>()
+            .map(|v| v.join("\n")),
+    }
+}
+
+fn handle_table(
+    pattern: &str,
+    parts: &[&str],
+    value: &toml::map::Map<String, Value>,
+) -> ExtractResult<String> {
+    match parts.split_first() {
+        Some((first, rest)) => value
+            .get(*first)
+            .map(|v| handle(pattern, rest, v))
+            .unwrap_or_else(|| {
+                Err(construct_error(
+                    pattern,
+                    first,
+                    &format!("No such property [{first}]"),
+                ))
+            }),
+        None => value
+            .iter()
+            .map(|(k, v)| handle(pattern, &[], v).map(|val| format!("{k} = {val}")))
+            .collect::<ExtractResult<Vec<_>>>()
+            .map(|v| v.join("\n")),
     }
 }
 
@@ -62,12 +75,14 @@ fn construct_error(pattern: &str, part: &str, msg: &str) -> String {
     format!("{pattern}\n{offset}^ {msg}")
 }
 
-fn check_primitive(pattern: &str, parts: VecDeque<String>, value: String) -> ExtractResult<String> {
-    let mut parts = parts;
-    if let Some(first) = parts.pop_front() {
-        let error_msg = format!("No such property [{first}]");
-        Err(construct_error(pattern, &first, &error_msg))
-    } else {
+fn check_primitive(pattern: &str, parts: &[&str], value: String) -> ExtractResult<String> {
+    if parts.is_empty() {
         Ok(value)
+    } else {
+        Err(construct_error(
+            pattern,
+            parts[0],
+            &format!("No such property [{}]", parts[0]),
+        ))
     }
 }
