@@ -48,7 +48,7 @@ fn handle_pattern(pattern: &str) {
     let manifest = manifest
         .parse::<toml::Value>()
         .expect("Failed to parse Cargo.toml manifest");
-    match cargo_extract::extract(pattern, manifest) {
+    match cargo_extract::extract(pattern, &manifest) {
         Ok(extracted) => println!("{extracted}"),
         Err(err) => {
             println!("{err}");
