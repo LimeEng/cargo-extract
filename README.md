@@ -8,7 +8,7 @@ This cargo subcommand allows you to extract specific information from a `Cargo.t
 ## Installation
 
 ```sh
-$ cargo install cargo-extract
+cargo install cargo-extract
 ```
 
 ## Examples
@@ -18,7 +18,7 @@ $ cargo extract package.name
 cargo-extract
 
 $ cargo extract package.version
-0.3.1
+0.3.2
 
 $ cargo extract package.categories
 command-line-utilities
