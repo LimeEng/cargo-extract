@@ -1,3 +1,7 @@
+#![allow(clippy::missing_errors_doc)]
+
+pub mod cli;
+
 use toml::Value;
 
 pub type ExtractResult<T> = Result<T, String>;
@@ -11,7 +15,7 @@ fn handle(pattern: &str, parts: &[&str], value: &Value) -> ExtractResult<String>
     match value {
         // If included in the below "v @ "-binding pattern
         // it produces strings with extra quotes
-        Value::String(value) => check_primitive(pattern, parts, value.to_string()),
+        Value::String(value) => check_primitive(pattern, parts, value.clone()),
         value @ (Value::Integer(_) | Value::Float(_) | Value::Boolean(_) | Value::Datetime(_)) => {
             check_primitive(pattern, parts, value.to_string())
         }
@@ -22,21 +26,20 @@ fn handle(pattern: &str, parts: &[&str], value: &Value) -> ExtractResult<String>
 
 fn handle_array(pattern: &str, parts: &[&str], value: &[Value]) -> ExtractResult<String> {
     match parts.split_first() {
-        Some((first, rest)) if first.parse::<usize>().is_ok() => value
-            .get(first.parse::<usize>().unwrap())
-            .map(|v| handle(pattern, rest, v))
-            .unwrap_or_else(|| {
-                Err(construct_error(
+        Some((first, rest)) => {
+            let idx = first.parse::<usize>().map_err(|_| {
+                construct_error(pattern, first, &format!("Not an array index [{first}]"))
+            })?;
+
+            match value.get(idx) {
+                Some(v) => handle(pattern, rest, v),
+                None => Err(construct_error(
                     pattern,
                     first,
                     &format!("Array index out of bounds [{first}]"),
-                ))
-            }),
-        Some((first, _)) => Err(construct_error(
-            pattern,
-            first,
-            &format!("Not an array index [{first}]"),
-        )),
+                )),
+            }
+        }
         None => value
             .iter()
             .map(|v| handle(pattern, &[], v))
@@ -53,14 +56,8 @@ fn handle_table(
     match parts.split_first() {
         Some((first, rest)) => value
             .get(*first)
-            .map(|v| handle(pattern, rest, v))
-            .unwrap_or_else(|| {
-                Err(construct_error(
-                    pattern,
-                    first,
-                    &format!("No such property [{first}]"),
-                ))
-            }),
+            .ok_or_else(|| construct_error(pattern, first, &format!("No such property [{first}]")))
+            .and_then(|v| handle(pattern, rest, v)),
         None => value
             .iter()
             .map(|(k, v)| handle(pattern, &[], v).map(|val| format!("{k} = {val}")))

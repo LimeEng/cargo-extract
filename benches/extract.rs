@@ -1,9 +1,9 @@
-use criterion::{Criterion, black_box, criterion_group, criterion_main};
+use criterion::{Criterion, criterion_group, criterion_main};
+use std::hint::black_box;
 
 fn bench_extract(c: &mut Criterion) {
-    let manifest = include_str!("../Cargo.toml")
-        .parse::<toml::Value>()
-        .expect("Failed to parse Cargo.toml manifest");
+    let manifest = include_str!("../Cargo.toml");
+    let manifest = toml::from_str(manifest).expect("Failed to parse Cargo.toml manifest");
 
     macro_rules! extract {
         ($pattern:expr) => {
@@ -15,7 +15,6 @@ fn bench_extract(c: &mut Criterion) {
         b.iter(|| {
             extract!("package.name");
             extract!("package.version");
-            extract!("package.authors");
             extract!("package.description");
             extract!("package.repository");
             extract!("package.categories");
