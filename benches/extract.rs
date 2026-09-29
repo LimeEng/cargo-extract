@@ -1,9 +1,10 @@
 use criterion::{Criterion, criterion_group, criterion_main};
 use std::hint::black_box;
 
+const MANIFEST: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/Cargo.toml"));
+
 fn bench_extract(c: &mut Criterion) {
-    let manifest = include_str!("../Cargo.toml");
-    let manifest = toml::from_str(manifest).expect("Failed to parse Cargo.toml manifest");
+    let manifest = toml::from_str(MANIFEST).expect("Failed to parse Cargo.toml manifest");
 
     macro_rules! extract {
         ($pattern:expr) => {
