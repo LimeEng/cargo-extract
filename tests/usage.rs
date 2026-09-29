@@ -84,6 +84,18 @@ fn arrays() {
         math.collatz.1
         1
     "});
+    test!(indoc! {"
+        emojis.fruit
+        🍋‍🟩
+        🥝
+        🍑
+    "});
+    test!(indoc! {"
+        emojis.weather
+        ☀️
+        🌧️
+        ❄️
+    "});
 }
 
 fn cargo_toml() -> toml::Value {
@@ -96,6 +108,10 @@ fn cargo_toml() -> toml::Value {
         fibonacci = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
         power_of_two = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]
         collatz = [[4, 2, 1], [1], [10, 5, 16, 8, 4, 2, 1], [2, 1], [16, 8, 4, 2, 1]]
+
+        [emojis]
+        fruit = ["🍋‍🟩", "🥝", "🍑"]
+        weather = ["☀️", "🌧️", "❄️"]
     "#};
 
     toml::from_str(manifest).unwrap()

@@ -46,6 +46,64 @@ fn tables() {
         basket.fruit.nope.also_no
                      ^ No such property [nope]
     "});
+    test!(indoc! {"
+        basket.fruit.fruit
+        basket.fruit.fruit
+                     ^ No such property [fruit]
+    "});
+    test!(indoc! {"
+        🍋‍🟩🥝🍑.missing
+        🍋‍🟩🥝🍑.missing
+               ^ No such property [missing]
+    "});
+    test!(indoc! {"
+        界.missing
+        界.missing
+           ^ No such property [missing]
+    "});
+    test!(indoc! {"
+        e\u{301}.missing
+        e\u{301}.missing
+          ^ No such property [missing]
+    "});
+    test!(indoc! {"
+        👩‍👩‍👧‍👦.missing
+        👩‍👩‍👧‍👦.missing
+           ^ No such property [missing]
+    "});
+    test!(indoc! {"
+        🇸🇪.missing
+        🇸🇪.missing
+           ^ No such property [missing]
+    "});
+    test!(indoc! {"
+        界.e\u{301}.👩‍👩‍👧‍👦.🇸🇪.missing
+        界.e\u{301}.👩‍👩‍👧‍👦.🇸🇪.missing
+                   ^ No such property [missing]
+    "});
+    test!(indoc! {"
+        界.items.nope
+        界.items.nope
+                 ^ Not an array index [nope]
+    "});
+
+    test!(indoc! {"
+        .basket
+        .basket
+        ^ No such property []
+    "});
+
+    test!(indoc! {"
+        basket..fruit
+        basket..fruit
+               ^ No such property []
+    "});
+
+    test!(indoc! {"
+        basket.
+        basket.
+               ^ No such property []
+    "});
 }
 
 #[test]
@@ -80,6 +138,11 @@ fn arrays() {
         math.collatz.nonexistent.0
                      ^ Not an array index [nonexistent]
     "});
+    test!(indoc! {"
+        math.collatz.0.0.0
+        math.collatz.0.0.0
+                         ^ No such property [0]
+    "});
 }
 
 fn cargo_toml() -> toml::Value {
@@ -92,6 +155,19 @@ fn cargo_toml() -> toml::Value {
         fibonacci = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
         power_of_two = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]
         collatz = [[4, 2, 1], [1], [10, 5, 16, 8, 4, 2, 1], [2, 1], [16, 8, 4, 2, 1]]
+
+        ["🍋‍🟩🥝🍑"]
+
+        ["界"]
+        items = [1]
+
+        ["e\u0301"]
+
+        ["👩‍👩‍👧‍👦"]
+
+        ["🇸🇪"]
+
+        ["界"."e\u0301"."👩‍👩‍👧‍👦"."🇸🇪"]
     "#};
 
     toml::from_str(manifest).unwrap()
