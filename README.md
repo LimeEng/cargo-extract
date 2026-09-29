@@ -3,7 +3,7 @@
 
 # cargo-extract
 
-This cargo subcommand allows you to extract specific information from a `Cargo.toml` file.
+This cargo subcommand allows you to extract specific information from a `Cargo.toml` file. It can also print the target triple `cargo-extract` was built for.
 
 ## Installation
 
@@ -11,7 +11,14 @@ This cargo subcommand allows you to extract specific information from a `Cargo.t
 cargo install cargo-extract
 ```
 
-## Examples
+## Usage
+
+```sh
+cargo extract <ACCESS_PATTERN>
+cargo extract --arch
+```
+
+An access pattern is a sequence of TOML table keys separated by periods. Array elements are selected with zero-based integer indices. For example:
 
 ```sh
 $ cargo extract package.name
@@ -29,5 +36,5 @@ $ cargo extract package.categories.0
 command-line-utilities
 
 $ cargo extract --arch
-x86_64-pc-windows-msvc
+x86_64-unknown-linux-gnu
 ```

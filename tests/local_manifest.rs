@@ -1,7 +1,8 @@
+const MANIFEST: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/Cargo.toml"));
+
 #[test]
 fn local_cargo_manifest() {
-    let manifest = include_str!("../Cargo.toml");
-    let manifest = toml::from_str(manifest).expect("Failed to parse Cargo.toml manifest");
+    let manifest = toml::from_str(MANIFEST).expect("Failed to parse Cargo.toml manifest");
 
     macro_rules! test {
         ($pattern:expr, $target:expr) => {
