@@ -25,7 +25,7 @@ $ cargo extract package.name
 cargo-extract
 
 $ cargo extract package.version
-0.3.4
+0.4.0
 
 $ cargo extract package.categories
 command-line-utilities
