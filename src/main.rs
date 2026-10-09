@@ -1,4 +1,4 @@
-use cargo_extract::cli;
+mod cli;
 
 fn main() {
     cli::run();

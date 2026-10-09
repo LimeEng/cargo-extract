@@ -15,6 +15,7 @@ cargo install cargo-extract
 
 ```sh
 cargo extract <ACCESS_PATTERN>
+cargo extract --from <PATH> <ACCESS_PATTERN>
 cargo extract --arch
 ```
 
@@ -37,4 +38,7 @@ command-line-utilities
 
 $ cargo extract --arch
 x86_64-unknown-linux-gnu
+
+$ cargo extract --from ../other-project/Cargo.toml package.name
+other-project
 ```
