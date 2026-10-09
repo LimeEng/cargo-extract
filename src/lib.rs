@@ -1,7 +1,5 @@
 //! Extract values from a parsed TOML document using dotted table keys and array indices.
 
-pub mod cli;
-
 use toml::Value;
 use unicode_width::UnicodeWidthStr;
 
