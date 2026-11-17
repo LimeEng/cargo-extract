@@ -1,3 +1,4 @@
+use cargo_extract::{OutputFormat, extract};
 use criterion::{Criterion, criterion_group, criterion_main};
 use std::hint::black_box;
 
@@ -8,7 +9,14 @@ fn bench_extract(c: &mut Criterion) {
 
     macro_rules! extract {
         ($pattern:expr) => {
-            black_box(cargo_extract::extract($pattern, &manifest).unwrap());
+            black_box(
+                extract(
+                    black_box($pattern),
+                    black_box(&manifest),
+                    black_box(OutputFormat::Plain),
+                )
+                .unwrap(),
+            );
         };
     }
 

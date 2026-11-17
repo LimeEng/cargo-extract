@@ -1,10 +1,11 @@
-use cargo_extract::extract;
+use cargo_extract::{OutputFormat, extract};
 use indoc::indoc;
 
 macro_rules! test {
     ($test_case:expr) => {
         let (pattern, output) = $test_case.split_once("\n").expect("Should not fail");
-        let extracted = extract(pattern, &cargo_toml()).expect("Should not fail");
+        let extracted =
+            extract(pattern, &cargo_toml(), OutputFormat::Plain).expect("Should not fail");
         assert_eq!(extracted, output.trim());
     };
 }
