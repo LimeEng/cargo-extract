@@ -15,6 +15,7 @@ exclude = [".github/**"]
 
 [dependencies]
 clap = "4"
+serde_json = "1"
 toml = { version = "1", features = ["preserve_order"] }
 unicode-width = "0.2"
 

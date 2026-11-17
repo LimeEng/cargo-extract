@@ -1,3 +1,5 @@
+use cargo_extract::{OutputFormat, extract};
+
 const MANIFEST: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/Cargo.toml"));
 
 #[test]
@@ -6,7 +8,7 @@ fn local_cargo_manifest() {
 
     macro_rules! test {
         ($pattern:expr, $target:expr) => {
-            let extracted = cargo_extract::extract($pattern, &manifest).unwrap();
+            let extracted = extract($pattern, &manifest, OutputFormat::Plain).unwrap();
             assert_eq!(extracted, env!($target));
         };
     }
